@@ -37,6 +37,7 @@ class NasaTemperature(UseCase):
             data = data.replace("***", 0)
             data = data.iloc[:-1, :]
             data = data.astype(float)
+            data.index = pd.to_datetime(data.index, format='%Y')
             data.to_csv(self.clean / '{}.csv'.format(name))
 
 
