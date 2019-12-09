@@ -1,4 +1,5 @@
 from ftplib import FTP
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -37,6 +38,7 @@ class NasaTemperature(UseCase):
             data = data.replace("***", 0)
             data = data.iloc[:-1, :]
             data = data.astype(float)
+            data.loc[:, 'Year'] = data.index
             data.index = pd.to_datetime(data.index, format='%Y')
             data.to_csv(self.clean / '{}.csv'.format(name))
 
@@ -78,6 +80,11 @@ class NasaCarbonPPM(UseCase):
                         break
 
             data = pd.read_csv(self.raw / name, skiprows=num)
+            try:
+                data.index = [datetime(y, m, 1) for y, m in zip(data.loc[:, 'year'], data.loc[:, 'month'])]
+                print(name)
+            except KeyError:
+                pass
             data.to_csv(self.clean / name)
 
 
